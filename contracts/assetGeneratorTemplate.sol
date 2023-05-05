@@ -22,13 +22,14 @@ contract Asset is ERC1155 {
         string currentType;
         string total;
         string issure;
+        string description;
     }
     //function to add or create a token
-    function AddToken(string memory name, string memory currentType,uint total,string memory issure)public handler returns(bool){
+    function AddToken(string memory name, string memory currentType,uint total,string memory issure,string memory description)public handler returns(bool){
         //creates the token
         _mint(msg.sender,totalCoins,total, "");
         //asigns attributes
-        tokens[totalCoins] = Tokens(name,currentType,total,issure);
+        tokens[totalCoins] = Tokens(name,currentType,total,issure,description);
         //keeps track of ammount of tokens
         totalCoins++;
         return true;
