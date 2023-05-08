@@ -90,9 +90,12 @@ contract Marketplace {
         uint256 _price
     );
 
+    //change to admin token
     constructor()  {
         admin = msg.sender;
     }
+
+
     /**
         @param _newFee This is new marketplace fee amount
     **/
@@ -695,6 +698,10 @@ contract Marketplace {
     /**
         @dev This is the modifier to make - only Admin can access the function
     **/
+
+
+
+    
     modifier onlyAdmin{
         require(admin == msg.sender, "OA");
         _;
