@@ -41,4 +41,12 @@ contract Asset is ERC1155 {
         totalCoins++;
         return true;
     }
+    //broker can manage assets on chain
+    function EditToken(uint _ID,bool _create_destroy,uint _total,address _address)public handler returns(bool){
+        if(_create_destroy == true){
+            _mint(_address,_ID,_total, "");
+        } else {
+            _burn(_address,_ID,_total, "");
+        }
+    }
 }
