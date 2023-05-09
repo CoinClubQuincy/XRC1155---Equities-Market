@@ -28,6 +28,7 @@ contract Asset is ERC1155 {
     struct TokenNames{
         string total;
         string description;
+        uint tokenID;
     }
     //function to add or create a token
     function AddToken(string memory name, string memory currentType,uint total,string memory issure,string memory description)public handler returns(bool){
@@ -35,7 +36,7 @@ contract Asset is ERC1155 {
         _mint(msg.sender,totalCoins,total, "");
         //asigns attributes
         tokens[totalCoins] = Tokens(name,currentType,total,issure,description);
-        tokenName[name] = TokenNames(total,description);
+        tokenName[name] = TokenNames(total,description,totalCoins);
         //keeps track of ammount of tokens
         totalCoins++;
         return true;
