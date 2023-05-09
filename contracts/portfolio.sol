@@ -97,17 +97,57 @@ contract Portfolio is ERC1155{
         return success;
     }
 
-    function createList() public view handler returns(uint){}
-    function buyListToken() public view handler returns(uint){}
-    function cancelList() public view handler returns(uint){}
-    function transfer() public view handler returns(uint){}
-    function makeOffer() public view handler returns(uint){}
-    function acceptOffer() public view handler returns(uint){}
-    function cancelOffer() public view handler returns(uint){}
-    function depositEscrow() public view handler returns(uint){}
-    function withdrawEscrow() public view handler returns(uint){}
-    function createAuction() public view handler returns(uint){}
-    function placeBid() public view handler returns(uint){}
-    function cancelAuction() public view handler returns(uint){}
-    function claimAuction() public view handler returns(uint){}
+    function createList(address _token,uint256 _tokenId,uint256 _amountOfToken,uint256 _deadline,uint256 _price) public handler returns(bool){
+        marketplace.createList(_token,_tokenId,_amountOfToken,_deadline,_price);
+        return true;
+    }
+
+    function buyListToken(uint _sellId) public handler returns(bool){
+        marketplace.buyListToken(_sellId);
+        return true;
+    }
+
+    function cancelList() public view handler returns(uint){
+
+    }
+    
+    function transfer() public view handler returns(uint){
+
+    }
+    
+    function makeOffer() public view handler returns(uint){
+
+    }
+    
+    function acceptOffer() public view handler returns(uint){
+
+    }
+    
+    function cancelOffer() public view handler returns(uint){
+
+    }
+    
+    function depositEscrow() public view handler returns(uint){
+
+    }
+    
+    function withdrawEscrow() public view handler returns(uint){
+
+    }
+    
+    function createAuction() public view handler returns(uint){
+
+    }
+    
+    function placeBid() public view handler returns(uint){
+
+    }
+    
+    function cancelAuction() public view handler returns(uint){
+
+    }
+    
+    function claimAuction() public view handler returns(uint){
+
+    }
 }
