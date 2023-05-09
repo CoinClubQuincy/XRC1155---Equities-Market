@@ -55,19 +55,20 @@ contract portfolioLedger{
 contract Portfolio is ERC1155{
     uint public handlerToken;
     string public accountName;
-    address DAppLedger;
 
     Marketplace public marketplace;
-    
+    portfolioLedger public DAppLedger;
+
     constructor(string memory _URI,string memory _name,address _DAppLedger,address _marketplace) ERC1155(_URI) {
         handlerToken = uint(keccak256(abi.encodePacked(_URI)));
         _mint(msg.sender,handlerToken,1, "");
+
         accountName = _name;
-        DAppLedger = _DAppLedger;
+        DAppLedger = portfolioLedger(_DAppLedger);
         marketplace = Marketplace(_marketplace);
     }
     modifier broker{
-        //require(balanceOf(msg.sender,handlerToken) <= 1, "broker does not hold handler token");
+        require(marketplace.balanceOf(msg.sender,marketplace.handlerToken()) <= 1, "broker does not hold handler token");
         _;
     }
     modifier handler{
