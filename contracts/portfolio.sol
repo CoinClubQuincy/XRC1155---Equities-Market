@@ -51,7 +51,7 @@ contract portfolioLedger{
         }
     }
     //forward funds from one user name to another
-    function forwardFunds(string memory _reciver)public payable returns(bool){
+    function forwardFunds(string memory _reciver)external payable returns(bool){
         string memory account_;
         address portfolio_;
         bool exist_;
@@ -68,12 +68,14 @@ contract Portfolio is ERC1155{
 
     Marketplace public marketplace;
     portfolioLedger public DAppLedger;
+    address private ledgerPrivate;
 
     constructor(string memory _URI,string memory _name,address _DAppLedger,address _marketplace) ERC1155(_URI) {
         handlerToken = uint(keccak256(abi.encodePacked(_URI)));
         _mint(msg.sender,handlerToken,1, "");
 
         accountName = _name;
+        ledgerPrivate = _DAppLedger;
         DAppLedger = portfolioLedger(_DAppLedger);
         marketplace = Marketplace(_marketplace);
     }
@@ -89,11 +91,10 @@ contract Portfolio is ERC1155{
     function BrokerageAdmin(address _user)public returns(bool){
         //remove token from users address to a new address
     }
-    function sendFunds(string memory _reciver)public handler returns(bool){
-        // bool success = payable(portfolioLedgerAddress).transfer{value: msg.value}(
-        //     abi.encodeWithSignature("forwardFunds(string)", _reciver)
-        // );
-        // return success;
+    function sendFunds(string memory _reciver)public payable handler returns(bool){
+        bool success = DAppLedger.forwardFunds{value: msg.value}(_reciver);
+        require(success, "Failed to forward funds.");
+        return success;
     }
 
     function createList() public view handler returns(uint){}
