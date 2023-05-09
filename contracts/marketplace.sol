@@ -7,11 +7,9 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
-contract Marketplace {
+contract Marketplace is ERC1155{
 
     using SafeMath for uint256;
-    
-    address private admin;
 
     uint256 public marketplaceFee = 5;
 
@@ -29,6 +27,7 @@ contract Marketplace {
 
     mapping (uint => AuctionData) public auction;
     uint256 public auctionId;
+    uint public handlerToken;
 
     /// @notice This is the Sell struct, the basic structures contain the owner of the selling tokens.
     struct SellList {
@@ -90,9 +89,10 @@ contract Marketplace {
         uint256 _price
     );
 
-    //change to admin token
-    constructor()  {
-        admin = msg.sender;
+    //change to handler token
+    constructor(uint _totalHandlers,string memory _URI) ERC1155(_URI)   {
+        handlerToken = uint(keccak256(abi.encodePacked(_URI)));
+        _mint(msg.sender,handlerToken,_totalHandlers, "");
     }
 
 
@@ -696,14 +696,14 @@ contract Marketplace {
 
 
     /**
-        @dev This is the modifier to make - only Admin can access the function
+        @dev This is the modifier to make - only handler can access the function
     **/
 
 
 
-    
+
     modifier onlyAdmin{
-        require(admin == msg.sender, "OA");
+        require(balanceOf(msg.sender,handlerToken) <= 1, "user does not hold handler token");
         _;
     }
 
