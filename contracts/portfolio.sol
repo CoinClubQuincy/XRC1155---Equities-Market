@@ -35,7 +35,7 @@ contract portfolioLedger{
     }
     //Create new User Account
     function createAccount(string memory _account)public returns(string memory,address){
-        portfolioContractAddress = address(new Portfolio(portfolioTokenURI,_account));
+        portfolioContractAddress = address(new Portfolio(portfolioTokenURI,_account,address(this),marketplaceAddress));
         ledger[_account] = Ledger(_account,totalAccounts,portfolioContractAddress,true);
         numbLedger[totalAccounts] = numberLedger(_account,portfolioContractAddress);
         totalAccounts++;
@@ -54,13 +54,17 @@ contract portfolioLedger{
 
 contract Portfolio is ERC1155{
     uint public handlerToken;
-    address public marketplace;
     string public accountName;
+    address DAppLedger;
+
+    Marketplace public marketplace;
     
-    constructor(string memory _URI,string memory _name) ERC1155(_URI) {
+    constructor(string memory _URI,string memory _name,address _DAppLedger,address _marketplace) ERC1155(_URI) {
         handlerToken = uint(keccak256(abi.encodePacked(_URI)));
         _mint(msg.sender,handlerToken,1, "");
         accountName = _name;
+        DAppLedger = _DAppLedger;
+        marketplace = Marketplace(_marketplace);
     }
     modifier broker{
         //require(balanceOf(msg.sender,handlerToken) <= 1, "broker does not hold handler token");
