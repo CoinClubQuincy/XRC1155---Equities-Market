@@ -31,26 +31,36 @@ contract portfolioLedger{
     }
     struct numberLedger{
         string account;
-        address portfolio;   
+        address portfolio;  
+        bool exist; 
     }
     //Create new User Account
     function createAccount(string memory _account)public returns(string memory,address){
         portfolioContractAddress = address(new Portfolio(portfolioTokenURI,_account,address(this),marketplaceAddress));
         ledger[_account] = Ledger(_account,totalAccounts,portfolioContractAddress,true);
-        numbLedger[totalAccounts] = numberLedger(_account,portfolioContractAddress);
+        numbLedger[totalAccounts] = numberLedger(_account,portfolioContractAddress,true);
         totalAccounts++;
         return ("new account created", portfolioContractAddress);
     }
     //check and view new user Account
     function checkAccount(string memory _account,uint accountNumber)public returns(string memory,address,bool){
-        if(ledger[_account].exist = true){
+        if(ledger[_account].exist = true || numbLedger[accountNumber].exist){
             return (ledger[_account].account,ledger[_account].portfolio,ledger[_account].exist);
         }else{
             return ("none",0x0000000000000000000000000000000000000000,false);
         }
     }
+    //forward funds from one user name to another
+    function forwardFunds(string memory _reciver)public payable returns(bool){
+        string memory account_;
+        address portfolio_;
+        bool exist_;
+        (account_, portfolio_, exist_) = checkAccount(_reciver,0);
+        require(exist_ == true, "User does not exist");
+        payable(portfolio_).transfer(msg.value);
+        return true;
+    }
 }
-
 
 contract Portfolio is ERC1155{
     uint public handlerToken;
@@ -76,19 +86,27 @@ contract Portfolio is ERC1155{
         _;
     }
 
-    function BrokerageAdmin()public returns(bool){}
+    function BrokerageAdmin(address _user)public returns(bool){
+        //remove token from users address to a new address
+    }
+    function sendFunds(string memory _reciver)public handler returns(bool){
+        // bool success = payable(portfolioLedgerAddress).transfer{value: msg.value}(
+        //     abi.encodeWithSignature("forwardFunds(string)", _reciver)
+        // );
+        // return success;
+    }
 
-    function createList() public view returns(uint){}
-    function buyListToken() public view returns(uint){}
-    function cancelList() public view returns(uint){}
-    function transfer() public view returns(uint){}
-    function makeOffer() public view returns(uint){}
-    function acceptOffer() public view returns(uint){}
-    function cancelOffer() public view returns(uint){}
-    function depositEscrow() public view returns(uint){}
-    function withdrawEscrow() public view returns(uint){}
-    function createAuction() public view returns(uint){}
-    function placeBid() public view returns(uint){}
-    function cancelAuction() public view returns(uint){}
-    function claimAuction() public view returns(uint){}
+    function createList() public view handler returns(uint){}
+    function buyListToken() public view handler returns(uint){}
+    function cancelList() public view handler returns(uint){}
+    function transfer() public view handler returns(uint){}
+    function makeOffer() public view handler returns(uint){}
+    function acceptOffer() public view handler returns(uint){}
+    function cancelOffer() public view handler returns(uint){}
+    function depositEscrow() public view handler returns(uint){}
+    function withdrawEscrow() public view handler returns(uint){}
+    function createAuction() public view handler returns(uint){}
+    function placeBid() public view handler returns(uint){}
+    function cancelAuction() public view handler returns(uint){}
+    function claimAuction() public view handler returns(uint){}
 }
