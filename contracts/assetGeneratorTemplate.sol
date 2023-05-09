@@ -17,11 +17,16 @@ contract Asset is ERC1155 {
     }
     //map token number to struct and mappping
     mapping(uint => Tokens) public tokens;
+    mapping(string => TokenNames) public tokenName;
     struct Tokens{
         string name;
         string currentType;
         string total;
         string issure;
+        string description;
+    }
+    struct TokenNames{
+        string total;
         string description;
     }
     //function to add or create a token
@@ -30,13 +35,9 @@ contract Asset is ERC1155 {
         _mint(msg.sender,totalCoins,total, "");
         //asigns attributes
         tokens[totalCoins] = Tokens(name,currentType,total,issure,description);
+        tokenName[name] = TokenNames(total,description);
         //keeps track of ammount of tokens
         totalCoins++;
-        return true;
-    }
-    //handler Can redeem funds from contract
-    function redeemContractValue()public handler returns(bool){
-        payable(msg.sender).transfer(address(this).balance);
         return true;
     }
 }
