@@ -4,6 +4,8 @@
 // It will be used by the Solidity compiler to validate its version.
 pragma solidity ^0.8.9;
 
+
+import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 

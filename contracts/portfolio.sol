@@ -7,28 +7,42 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "./marketplace.sol";
 
 contract portfolioLedger{
-    string portfolioTokenURI;
-    constructor(string memory _URI){
-        portfolioTokenURI = _URI;
-    }
+    string portfolioTokenURI;   //URI formart for users
+    address marketplaceAddress; //address of marketplace Contract
+
     address public portfolioContractAddress;
     uint totalAccounts = 0;
+    
+    constructor(uint _totalHandlers,string memory _URI){
+        portfolioTokenURI = _URI;
+        marketplaceAddress = address(new Marketplace(_totalHandlers,_URI));
+        totalAccounts++;
+    }
     mapping(string => Ledger) ledger;
+    mapping(uint => numberLedger) numbLedger;
     struct Ledger{
         string account;
+        uint accountNumber;
         address portfolio;
         bool exist;
+    }
+    struct numberLedger{
+        string account;
+        address portfolio;   
     }
     //Create new User Account
     function createAccount(string memory _account)public returns(string memory,address){
         portfolioContractAddress = address(new Portfolio(portfolioTokenURI,_account));
-        ledger[_account] = Ledger(_account,portfolioContractAddress,true);
+        ledger[_account] = Ledger(_account,totalAccounts,portfolioContractAddress,true);
+        numbLedger[totalAccounts] = numberLedger(_account,portfolioContractAddress);
+        totalAccounts++;
         return ("new account created", portfolioContractAddress);
     }
     //check and view new user Account
-    function checkAccount(string memory _account)public returns(string memory,address,bool){
+    function checkAccount(string memory _account,uint accountNumber)public returns(string memory,address,bool){
         if(ledger[_account].exist = true){
             return (ledger[_account].account,ledger[_account].portfolio,ledger[_account].exist);
         }else{
