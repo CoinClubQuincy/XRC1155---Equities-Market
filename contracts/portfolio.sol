@@ -36,7 +36,7 @@ contract portfolioLedger{
     }
     //Create new User Account
     function createAccount(string memory _account)public returns(string memory,address){
-        portfolioContractAddress = address(new Portfolio(portfolioTokenURI,_account,address(this),marketplaceAddress));
+        portfolioContractAddress = address(new Portfolio(portfolioTokenURI,_account,address(this),marketplaceAddress,msg.sender));
         ledger[_account] = Ledger(_account,totalAccounts,portfolioContractAddress,true);
         numbLedger[totalAccounts] = numberLedger(_account,portfolioContractAddress,true);
         totalAccounts++;
@@ -70,9 +70,9 @@ contract Portfolio is ERC1155{
     portfolioLedger public DAppLedger;
     address private ledgerPrivate;
 
-    constructor(string memory _URI,string memory _name,address _DAppLedger,address _marketplace) ERC1155(_URI) {
+    constructor(string memory _URI,string memory _name,address _DAppLedger,address _marketplace,address user) ERC1155(_URI) {
         handlerToken = uint(keccak256(abi.encodePacked(_URI)));
-        _mint(msg.sender,handlerToken,1, "");
+        _mint(user,handlerToken,1, "");
 
         accountName = _name;
         ledgerPrivate = _DAppLedger;
@@ -102,52 +102,63 @@ contract Portfolio is ERC1155{
         return true;
     }
 
-    function buyListToken(uint _sellId) public handler returns(bool){
-        marketplace.buyListToken(_sellId);
+    function buyListToken(uint _sellId) public payable handler returns(bool){
+        marketplace.buyListToken{value: msg.value}(_sellId);
         return true;
     }
 
-    function cancelList() public view handler returns(uint){
-
+    function cancelList(uint _sellId) public handler returns(bool){
+        marketplace.cancelList(_sellId);
+        return true;
     }
     
-    function transfer() public view handler returns(uint){
-
+    function transfer(address _receiver,address _token,uint256 _tokenId,uint256 _amountOfToken) public handler returns(bool){
+        marketplace.transfer(_receiver,_token,_tokenId,_amountOfToken);
+        return true;
     }
     
-    function makeOffer() public view handler returns(uint){
-
+    function makeOffer(uint256 _sellId,uint256 _price) public handler returns(bool){
+        marketplace.makeOffer(_sellId,_price);
+        return true;
     }
     
-    function acceptOffer() public view handler returns(uint){
-
+    function acceptOffer(uint256 _sellId,uint256 _offerCount) public handler returns(bool){
+        marketplace.acceptOffer(_sellId,_offerCount);
+        return true;
     }
     
-    function cancelOffer() public view handler returns(uint){
-
+    function cancelOffer(uint256 _sellId,uint256 _offerCount) public handler returns(bool){
+        marketplace.cancelOffer(_sellId,_offerCount);
+        return true;
     }
     
-    function depositEscrow() public view handler returns(uint){
-
+    function depositEscrow(uint256 _amount) public handler returns(bool){
+        marketplace.withdrawEscrow(_amount);
+        return true;
     }
     
-    function withdrawEscrow() public view handler returns(uint){
-
+    function withdrawEscrow(uint256 _amount) public handler returns(bool){
+        marketplace.withdrawEscrow(_amount);
+        return true;
     }
     
-    function createAuction() public view handler returns(uint){
-
+    function createAuction(address _token,uint256 _tokenId,uint256 _amountOfToken,uint256 _startPrice,uint256 _minIncrement,uint256 _startDate,uint256 _duration,bool _reserved) public handler returns(bool){
+        marketplace.createAuction(_token,_tokenId,_amountOfToken,_startPrice,_minIncrement,_startDate,_duration,_reserved);
+        return true;
     }
     
-    function placeBid() public view handler returns(uint){
-
+    function placeBid(uint256 _auctionId) public handler returns(bool){
+        marketplace.placeBid(_auctionId);
+        return true;
     }
     
-    function cancelAuction() public view handler returns(uint){
-
+    function cancelAuction(uint256 _auctionId) public handler returns(bool){
+        marketplace.cancelAuction(_auctionId);
+        return true;
     }
     
-    function claimAuction() public view handler returns(uint){
-
+    function claimAuction(uint256 _auctionId) public handler returns(bool){
+        marketplace.claimAuction(_auctionId);
+        return true;
     }
 }
