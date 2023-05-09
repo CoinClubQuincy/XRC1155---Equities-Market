@@ -8,19 +8,58 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
-
-
-contract portfolioLedger{}
+contract portfolioLedger{
+    string portfolioTokenURI;
+    constructor(string memory _URI){
+        portfolioTokenURI = _URI;
+    }
+    address public portfolioContractAddress;
+    uint totalAccounts = 0;
+    mapping(string => Ledger) ledger;
+    struct Ledger{
+        string account;
+        address portfolio;
+        bool exist;
+    }
+    //Create new User Account
+    function createAccount(string memory _account)public returns(string memory,address){
+        portfolioContractAddress = address(new Portfolio(portfolioTokenURI,_account));
+        ledger[_account] = Ledger(_account,portfolioContractAddress,true);
+        return ("new account created", portfolioContractAddress);
+    }
+    //check and view new user Account
+    function checkAccount(string memory _account)public returns(string memory,address,bool){
+        if(ledger[_account].exist = true){
+            return (ledger[_account].account,ledger[_account].portfolio,ledger[_account].exist);
+        }else{
+            return ("none",0x0000000000000000000000000000000000000000,false);
+        }
+    }
+}
 
 
 contract Portfolio is ERC1155{
+    uint public handlerToken;
+    address public marketplace;
+    string public accountName;
     
-    constructor(string memory _URI) ERC1155(_URI) {
-
+    constructor(string memory _URI,string memory _name) ERC1155(_URI) {
+        handlerToken = uint(keccak256(abi.encodePacked(_URI)));
+        _mint(msg.sender,handlerToken,1, "");
+        accountName = _name;
+    }
+    modifier broker{
+        //require(balanceOf(msg.sender,handlerToken) <= 1, "broker does not hold handler token");
+        _;
+    }
+    modifier handler{
+        require(balanceOf(msg.sender,handlerToken) <= 1, "user does not hold handler token");
+        _;
     }
 
-    function createList() public view returns(uint){}
+    function BrokerageAdmin()public returns(bool){}
 
+    function createList() public view returns(uint){}
     function buyListToken() public view returns(uint){}
     function cancelList() public view returns(uint){}
     function transfer() public view returns(uint){}
